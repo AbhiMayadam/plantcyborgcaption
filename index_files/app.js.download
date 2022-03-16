@@ -1,0 +1,35 @@
+(function () {
+    const API_ENDPOINT_PATTERN = 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={CHANNEL-ID}&broadcastStatus=active&key=AIzaSyBry3CouC50Czas3kfk3pRC5RwDE7YlK5o';
+    const VIDEO_EMBED_PATTERN = '<iframe src="https://www.youtube.com/embed/{VIDEO-ID}?feature=oembed&amp;rel=0&amp;mute=0&amp;loop=0&amp;controls=1&amp;autoplay=1" frameborder="0" allowfullscreen="1" allow="autoplay;encrypted-media;"></iframe>';
+
+    //STOP EDITING PAST HERE
+
+    const videoContainerNodes = document.querySelectorAll('.youtube_video--container');
+
+    videoContainerNodes.forEach(function (videoContainerNode) {
+        const channelId = videoContainerNode.dataset.channelId || '';
+        const fallbackId = videoContainerNode.dataset.fallbackId || '';
+        if (channelId.length && fallbackId.length) {
+            fetch(API_ENDPOINT_PATTERN.replace('{CHANNEL-ID}', channelId))
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (json) {
+                    let videoId = fallbackId;
+                    if ('items' in json && 'object' === typeof json.items) {
+                        for (let i = 0, l = json.items.length; i < l; i++) {
+                            if ('live' === json.items[i].snippet.liveBroadcastContent && 'videoId' in json.items[i].id) {
+                                videoId = json.items[i].id.videoId;
+                                break;
+                            }
+                        }
+                    }
+                    videoContainerNode.innerHTML = VIDEO_EMBED_PATTERN.replace('{VIDEO-ID}', videoId);
+                })
+                .catch(function (e) {
+                    videoContainerNode.innerHTML = VIDEO_EMBED_PATTERN.replace('{VIDEO-ID}', fallbackId);
+                    console.log(e);
+                });
+        }
+    });
+})();

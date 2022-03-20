@@ -393,7 +393,7 @@ var log_object = {"ajax_url":"https:\/\/www.artsworkintheageofbiotechnology.org\
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Plant-Bio-signal-Data-Exploration-&amp;-Feature-Classification">Plant Bio-signal Data Exploration &amp; Feature Classification<a class="anchor-link" href="https://www.artsworkintheageofbiotechnology.org/plant-cyborg/#Plant-Bio-signal-Data-Exploration-&amp;-Feature-Classification">¶</a></h1><hr>
 
-<p><img loading="lazy" style="float: right; padding-left: 20px" src="./index_files/Plant-Cyborg-portrait.png" width="200" height="300"></p>
+<p><img loading="lazy" style="float: right; padding-left: 20px" src="./index_files/Plant-Cyborg-portrait.png" alt="A small rubberplant sits in a pot on top of a robotic aperture with four legs. Four electrodes attach to the leaves from the machinery." width="200" height="300"></p>
 <h2 id="Intro">Intro<a class="anchor-link" href="https://www.artsworkintheageofbiotechnology.org/plant-cyborg/#Intro">¶</a></h2><p>This is an exploration of the bio-signals produced by a baby rubberplant (<i>Peperomia obtusifolia</i>). The houseplant has a robotic prosthesis that moves based on the plant's bio-signals. Four surface electrodes are each attached to a leaf, the signals are amplified 100x and fed to a script that controls the prosthesis motors. The below code block shows what python libraries that are being imported into the python script. Numpy and Pandas are both number processing libraries for Python. Matplotlib is a graphing library for python that outputs graphs as images.</p>
 
 </div>
@@ -426,7 +426,7 @@ var log_object = {"ajax_url":"https:\/\/www.artsworkintheageofbiotechnology.org\
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-Acquisition">Data Acquisition<a class="anchor-link" href="https://www.artsworkintheageofbiotechnology.org/plant-cyborg/#Data-Acquisition">¶</a></h2><p><img loading="lazy" style="float: right; padding-left: 20px" src="./index_files/Biosignal-recording-setup.png" width="225" height="300"></p>
+<h2 id="Data-Acquisition">Data Acquisition<a class="anchor-link" href="https://www.artsworkintheageofbiotechnology.org/plant-cyborg/#Data-Acquisition">¶</a></h2><p><img loading="lazy" style="float: right; padding-left: 20px" src="./index_files/Biosignal-recording-setup.png" alt="This shows the baby rubber plant with an four electrodes on four seperate leaves. The electrodes are connected to a small circuit board. The plant and circuit board are in an aluminium foil covered box." width="225" height="300"></p>
 <p>The baby rubberplant has surface electrodes on four of its leaves which are connected to the prosthesis computer by insulated coaxial cables.</p>
 <p>Sensor data is collected as comma separated files (.csv) in the folder /datasets grouped by stimuli and electrode channel (i.e. the leaf that is stimulated). Each dataset are approximately 10 minutes recording of 4 single-ended channels at 140 Hz in 16-bit resolution. Each channel is amplified 100x by LM358 op-amps and read by ADS1115 16-bit analog-to-digital converter.</p>
 <p>Under is the code used for data gathering. The whole script, ads1115-to-csv.py, is in the current folder.</p>
@@ -453,7 +453,7 @@ Approx. 10 minutes recording with dry soil (1 month since watering) plus soaked 
 <p>../chan_0_pain, chan_1_pain, chan_2_pain, chan_3_pain<br>
 The leaf corresponding to the channel has been cut after approx. 10 minutes baseline recording. The cut is 5 millimeter long from the outside of the leaf blade in proximity to the surface sensor.</p>
 <p>The following code block describes how the datasets from earlier are converted into a usable format for plotting.</p>
-<p><img loading="lazy" style="float: right; padding-left: 20px" src="./index_files/Pain-stimulation.png" width="200" height="300"></p>
+<p><img loading="lazy" style="float: right; padding-left: 20px" src="./index_files/Pain-stimulation.png" alt="A small incision was made in the leaf left of the electrode." width="200" height="300"></p>
 
 </div>
 </div>
@@ -1394,219 +1394,7 @@ mpl.mpl_figure_comm = function (comm, msg) {
 
     fig.parent_element = element;
     fig.cell_info = mpl.find_output_cell("<div id='" + id + "'></script></div>");
-    if (!fig.cell_info) {
-        console.error('Failed to find cell for figure', id, fig);
-        return;
-    }
-    fig.cell_info[0].output_area.element.one(
-        'cleared',
-        { fig: fig },
-        fig._remove_fig_handler
-    );
-};
 
-mpl.figure.prototype.handle_close = function (fig, msg) {
-    var width = fig.canvas.width / fig.ratio;
-    fig.cell_info[0].output_area.element.off(
-        'cleared',
-        fig._remove_fig_handler
-    );
-
-    // Update the output cell to use the data from the current canvas.
-    fig.push_to_output();
-    var dataURL = fig.canvas.toDataURL();
-    // Re-enable the keyboard manager in IPython - without this line, in FF,
-    // the notebook keyboard shortcuts fail.
-    IPython.keyboard_manager.enable();
-    fig.parent_element.innerHTML =
-        '<img src="./index_files/&#39; + dataURL + &#39;" width="&#39; + width + &#39;">';
-    fig.close_ws(fig, msg);
-};
-
-mpl.figure.prototype.close_ws = function (fig, msg) {
-    fig.send_message('closing', msg);
-    // fig.ws.close()
-};
-
-mpl.figure.prototype.push_to_output = function (_remove_interactive) {
-    // Turn the data on the canvas into data in the output cell.
-    var width = this.canvas.width / this.ratio;
-    var dataURL = this.canvas.toDataURL();
-    this.cell_info[1]['text/html'] =
-        '<img src="./index_files/&#39; + dataURL + &#39;" width="&#39; + width + &#39;">';
-};
-
-mpl.figure.prototype.updated_canvas_event = function () {
-    // Tell IPython that the notebook contents must change.
-    IPython.notebook.set_dirty(true);
-    this.send_message('ack', {});
-    var fig = this;
-    // Wait a second, then push the new image to the DOM so
-    // that it is saved nicely (might be nice to debounce this).
-    setTimeout(function () {
-        fig.push_to_output();
-    }, 1000);
-};
-
-mpl.figure.prototype._init_toolbar = function () {
-    var fig = this;
-
-    var toolbar = document.createElement('div');
-    toolbar.classList = 'btn-toolbar';
-    this.root.appendChild(toolbar);
-
-    function on_click_closure(name) {
-        return function (_event) {
-            return fig.toolbar_button_onclick(name);
-        };
-    }
-
-    function on_mouseover_closure(tooltip) {
-        return function (event) {
-            if (!event.currentTarget.disabled) {
-                return fig.toolbar_button_onmouseover(tooltip);
-            }
-        };
-    }
-
-    fig.buttons = {};
-    var buttonGroup = document.createElement('div');
-    buttonGroup.classList = 'btn-group';
-    var button;
-    for (var toolbar_ind in mpl.toolbar_items) {
-        var name = mpl.toolbar_items[toolbar_ind][0];
-        var tooltip = mpl.toolbar_items[toolbar_ind][1];
-        var image = mpl.toolbar_items[toolbar_ind][2];
-        var method_name = mpl.toolbar_items[toolbar_ind][3];
-
-        if (!name) {
-            /* Instead of a spacer, we start a new button group. */
-            if (buttonGroup.hasChildNodes()) {
-                toolbar.appendChild(buttonGroup);
-            }
-            buttonGroup = document.createElement('div');
-            buttonGroup.classList = 'btn-group';
-            continue;
-        }
-
-        button = fig.buttons[name] = document.createElement('button');
-        button.classList = 'btn btn-default';
-        button.href = '#';
-        button.title = name;
-        button.innerHTML = '<i class="fa &#39; + image + &#39; fa-lg"></i>';
-        button.addEventListener('click', on_click_closure(method_name));
-        button.addEventListener('mouseover', on_mouseover_closure(tooltip));
-        buttonGroup.appendChild(button);
-    }
-
-    if (buttonGroup.hasChildNodes()) {
-        toolbar.appendChild(buttonGroup);
-    }
-
-    // Add the status bar.
-    var status_bar = document.createElement('span');
-    status_bar.classList = 'mpl-message pull-right';
-    toolbar.appendChild(status_bar);
-    this.message = status_bar;
-
-    // Add the close button to the window.
-    var buttongrp = document.createElement('div');
-    buttongrp.classList = 'btn-group inline pull-right';
-    button = document.createElement('button');
-    button.classList = 'btn btn-mini btn-primary';
-    button.href = '#';
-    button.title = 'Stop Interaction';
-    button.innerHTML = '<i class="fa fa-power-off icon-remove icon-large"></i>';
-    button.addEventListener('click', function (_evt) {
-        fig.handle_close(fig, {});
-    });
-    button.addEventListener(
-        'mouseover',
-        on_mouseover_closure('Stop Interaction')
-    );
-    buttongrp.appendChild(button);
-    var titlebar = this.root.querySelector('.ui-dialog-titlebar');
-    titlebar.insertBefore(buttongrp, titlebar.firstChild);
-};
-
-mpl.figure.prototype._remove_fig_handler = function (event) {
-    var fig = event.data.fig;
-    fig.close_ws(fig, {});
-};
-
-mpl.figure.prototype._root_extra_style = function (el) {
-    el.style.boxSizing = 'content-box'; // override notebook setting of border-box.
-};
-
-mpl.figure.prototype._canvas_extra_style = function (el) {
-    // this is important to make the div 'focusable
-    el.setAttribute('tabindex', 0);
-    // reach out to IPython and tell the keyboard manager to turn it's self
-    // off when our div gets focus
-
-    // location in version 3
-    if (IPython.notebook.keyboard_manager) {
-        IPython.notebook.keyboard_manager.register_events(el);
-    } else {
-        // location in version 2
-        IPython.keyboard_manager.register_events(el);
-    }
-};
-
-mpl.figure.prototype._key_event_extra = function (event, _name) {
-    var manager = IPython.notebook.keyboard_manager;
-    if (!manager) {
-        manager = IPython.keyboard_manager;
-    }
-
-    // Check for shift+enter
-    if (event.shiftKey &amp;&amp; event.which === 13) {
-        this.canvas_div.blur();
-        // select the cell after this one
-        var index = IPython.notebook.find_cell_index(this.cell_info[0]);
-        IPython.notebook.select(index + 1);
-    }
-};
-
-mpl.figure.prototype.handle_save = function (fig, _msg) {
-    fig.ondownload(fig, null);
-};
-
-mpl.find_output_cell = function (html_output) {
-    // Return the cell and output element which can be found *uniquely* in the notebook.
-    // Note - this is a bit hacky, but it is done because the "notebook_saving.Notebook"
-    // IPython event is triggered only after the cells have been serialised, which for
-    // our purposes (turning an active figure into a static one), is too late.
-    var cells = IPython.notebook.get_cells();
-    var ncells = cells.length;
-    for (var i = 0; i = 3 moved mimebundle to data attribute of output
-                    data = data.data;
-                }
-                if (data['text/html'] === html_output) {
-                    return [cell, data, j];
-                }
-            }
-        }
-    }
-};
-
-// Register the function which deals with the matplotlib target/channel.
-// The kernel may be null if the page has been refreshed.
-if (IPython.notebook.kernel !== null) {
-    IPython.notebook.kernel.comm_manager.register_target(
-        'matplotlib',
-        mpl.mpl_figure_comm
-    );
-}
-
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
 
 
 
